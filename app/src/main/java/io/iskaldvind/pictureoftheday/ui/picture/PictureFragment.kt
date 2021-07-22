@@ -1,23 +1,30 @@
 package io.iskaldvind.pictureoftheday.ui.picture
 
 import android.os.Bundle
+import android.transition.ChangeBounds
+import android.transition.TransitionManager
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnticipateOvershootInterpolator
 import android.widget.Toast
+import androidx.annotation.LayoutRes
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import coil.load
 import io.iskaldvind.pictureoftheday.R
+import io.iskaldvind.pictureoftheday.util.EquilateralImageView
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.picture_fragment.*
 
 class PictureFragment: Fragment() {
 
     private var shift: Int = 0
+    private var enlarged = false
 
     private val viewModel: PictureOfTheDayViewModel by lazy {
         ViewModelProviders.of(this).get(PictureOfTheDayViewModel::class.java)
@@ -40,7 +47,35 @@ class PictureFragment: Fragment() {
         shift = arguments?.getInt(PICTURE_FOR) ?: 0
         viewModel.getData(shift)
             .observe(viewLifecycleOwner, Observer<PictureOfTheDayData> { renderData(it) })
+        view.findViewById<EquilateralImageView>(R.id.image_view).setOnClickListener {
+            if (enlarged) makeImageDefault() else enlargeImage()
+        }
     }
+
+
+    private fun makeImageDefault() {
+        enlarged = false
+        applyAnimation(R.layout.picture_fragment)
+    }
+
+
+    private fun enlargeImage() {
+        enlarged = true
+        applyAnimation(R.layout.picture_fragment_maxed)
+    }
+
+
+    private fun applyAnimation(@LayoutRes layout: Int) {
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(requireContext(), layout)
+        val transition = ChangeBounds()
+        transition.interpolator = AnticipateOvershootInterpolator(1.0f)
+        transition.duration = 1200
+
+        TransitionManager.beginDelayedTransition(constraint_container, transition)
+        constraintSet.applyTo(constraint_container)
+    }
+
 
 
     private fun renderData(data: PictureOfTheDayData) {

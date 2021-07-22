@@ -8,8 +8,8 @@
 
     <io.iskaldvind.pictureoftheday.util.EquilateralImageView
         android:id="@+id/image_view"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:layout_gravity="center"
         android:contentDescription="@string/photo_of_the_day_stub"
@@ -22,7 +22,8 @@
     <TextView
         android:id="@+id/image_description"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:translationX="-1200dp"
+        android:layout_height="0dp"
         android:textColor="#000000"
         app:layout_constraintTop_toBottomOf="@id/image_view"
         app:layout_constraintStart_toStartOf="parent"
