@@ -8,6 +8,11 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+    <style name="AppTheme.Splash">
+        <item name="android:windowBackground">@drawable/splash_background_drawable</item>
+    </style>
+
     <style name="pictureButton">
         <item name="android:layout_height">32dp</item>
         <item name="android:layout_width">32dp</item>
