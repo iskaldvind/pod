@@ -1,6 +1,10 @@
 package io.iskaldvind.pictureoftheday.ui.picture
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
 import android.util.Log
@@ -12,6 +16,7 @@ import android.view.animation.AnticipateOvershootInterpolator
 import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -25,6 +30,9 @@ class PictureFragment: Fragment() {
 
     private var shift: Int = 0
     private var enlarged = false
+
+    private val spaceWords = listOf("Sun", "Moon", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto",
+    "Triton", "Fobs", "Deimos", "space", "nebula", "gas", "clouds", "light", "star", "planet", "system", "galaxy", "comet", "asteroid", "atmosphere")
 
     private val viewModel: PictureOfTheDayViewModel by lazy {
         ViewModelProviders.of(this).get(PictureOfTheDayViewModel::class.java)
@@ -93,7 +101,24 @@ class PictureFragment: Fragment() {
                         error(R.drawable.ic_load_error_vector)
                         placeholder(R.drawable.ic_no_photo_vector)
                     }
-                    image_description.text = serverResponseData.explanation
+
+                    serverResponseData.explanation?.let { explanation ->
+                        val spannable = SpannableString(explanation)
+
+                        spaceWords.forEach { word ->
+                            var startIndex = 0
+                            while (true) {
+                                val index = explanation.indexOf(word, startIndex)
+                                if (index == -1) break
+                                startIndex = index + 1
+
+                                spannable.setSpan(ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.colorAccent)),
+                                index, index + word.length,
+                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                            }
+                        }
+                        image_description.text = spannable
+                    }
                 }
             }
             is PictureOfTheDayData.Loading -> {
